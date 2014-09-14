@@ -12,11 +12,13 @@ class User(models.Model):
 
 class RunLog(models.Model):
     user = models.ForeignKey(User)
-    date = models.DateTimeField(auto_now_add=True)
+    sport = models.CharField(max_length=100)
+    run_date = models.DateTimeField()
+    upload_date = models.DateTimeField(auto_now_add=True)
     distance = models.FloatField(null=False)
     picture = models.FileField(upload_to="upload_pictures")
     witness = models.CharField(max_length=200)
-    info = models.CharField(max_length=1024)
+    comment = models.CharField(max_length=1024)
 
     ACCEPT, REJECT, PENDING = 'accept', 'reject', 'pending'
     ITEM_STATUS = (

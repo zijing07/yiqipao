@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title>一起跑-上传</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/css/upload.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/css/jquery-ui.css">
+
+    <script type="text/javascript" src="media/resources/js/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="media/resources/js/jquery-ui.js"></script>
+    <script>
+      $(function() {
+        $( "#datepicker" ).datepicker();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+	<form action="/upload" role="form" method="POST" enctype="multipart/form-data">
+	  <h2>上传运动记录</h2>
+	  <div class="input-group upload-item">
+	    <span class="input-group-addon">运动</span>
+	    <input name="sport" type="text" class="form-control" placeholder="跑步/自行车等">
+	  </div>
+
+	  <div class="input-group upload-item">
+	    <span class="input-group-addon">距离(千米)</span>
+	    <input name="distance" type="text" class="form-control" placeholder="填入您此次运行的公里距离">
+	  </div>
+
+	  <div class="input-group upload-item">
+	    <span class="input-group-addon">运动日期</span>
+	    <input name="run_date" type="text" class="form-control" id="datepicker">
+	  </div>
+
+	  <div class="input-group upload-item">
+	    <span class="input-group-addon">证明人</span>
+	    <input name="witness" type="text" class="form-control" placeholder="您此次运动的证明人">
+	  </div>
+
+	  <div class="input-group upload-item">
+	    <span class="input-group-addon">图片</span>
+	    <input type="file" name="picture">
+	  </div>
+
+	  <textarea class="form-control upload-item" rows="3" name="comment"></textarea>
+
+	  <button class="btn btn-lg btn-primary btn-block" type="submit">上传此次运动</button>
+	</form>
+
+    </div><!-- container -->
+  </body>
+</html>
