@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'one_mile',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,8 +58,12 @@ WSGI_APPLICATION = 'yiqipao.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'yiqipao',
+        'USER': 'yiqipao',
+        'PASSWORD': 'yiqipao',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -67,7 +72,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -80,3 +85,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'template'))
