@@ -1,0 +1,15 @@
+body {
+    margin-top: 50px;
+    margin-left: 100px;
+    width: 80%;
+}
+
+.border-shape {
+    border: 1px solid;
+    border-radius: 20px;
+    padding: 40px;
+}
+
+.item-attr {
+    font-size: 25px;
+}

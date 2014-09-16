@@ -12,6 +12,8 @@ import hashlib
 
 HASH_STRING = 'yiyayiqipao'
 
+############################################################
+## index/login page
 @csrf_exempt
 def index(request):
     return render_to_response('index.html');
@@ -40,6 +42,8 @@ def login(request):
         response['result'] = 'internal error'
         return HttpResponse(simplejson.dumps(response))
 
+############################################################
+## register page
 @csrf_exempt
 def reg_page(request):
     return render_to_response('register.html')
@@ -69,6 +73,8 @@ def register(request):
         response['result'] = 'internal error'
         return HttpResponse(simplejson.dumps(response))
 
+############################################################
+## upload view
 @csrf_exempt
 def upload_page(request):
     return render_to_response('upload.html')
@@ -114,6 +120,14 @@ def upload(request):
         response['result'] = 'internal error'
         return HttpResponse(simplejson.dumps(response))
 
+############################################################
+## admin view
+@csrf_exempt
+def audit_page(request):
+    return render_to_response('audit.html')
+
+############################################################
+## private functions
 def __make_password(password):
     hash_str = password + HASH_STRING
     return hashlib.md5(hash_str.encode('utf-8')).hexdigest()
