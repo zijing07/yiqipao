@@ -1,7 +1,9 @@
 from django import forms
+from django.core import serializers
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 from one_mile.models import *
 
@@ -11,6 +13,7 @@ from datetime import datetime
 import hashlib
 
 HASH_STRING = 'yiyayiqipao'
+SESSION_STATUS = 'paper_white'
 
 ############################################################
 ## index/login page
@@ -29,6 +32,7 @@ def login(request):
         if (len(users) == 1):
             user = users[0]
             if (user.password == __make_password(password)):
+                request.session[SESSION_STATUS] = True
                 response['result'] = 'success'
                 return HttpResponse(simplejson.dumps(response))
             else :
@@ -66,6 +70,7 @@ def register(request):
 
         print (user.id)
 
+        request.session[SESSION_STATUS] = True
         response['result'] = 'success'
         return HttpResponse(simplejson.dumps(response))
     except Exception as e:
@@ -77,6 +82,8 @@ def register(request):
 ## upload view
 @csrf_exempt
 def upload_page(request):
+    if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+        return render_to_response('index.html')
     return render_to_response('upload.html')
 
 class PictureForm(forms.Form):
@@ -85,6 +92,9 @@ class PictureForm(forms.Form):
 @csrf_exempt
 def upload(request):
     try :
+        if request.session[SESSION_STATUS] is not True:
+            return render_to_response('index.html')
+        
         response = {}
         
         user = User.objects.all()[0]
@@ -124,7 +134,76 @@ def upload(request):
 ## admin view
 @csrf_exempt
 def audit_page(request):
-    return render_to_response('audit.html')
+    all_run_logs = RunLog.objects.filter(status=RunLog.PENDING)
+    return render_to_response('audit.html',
+                              {'all_run_log': all_run_logs},
+                              context_instance=RequestContext(request))
+
+@csrf_exempt
+def audit_detail(request):
+    response = {}
+    try :
+        run_log_id = request.POST.get("run_log_id")
+        run_logs = RunLog.objects.filter(id=run_log_id)
+        if len(run_logs) > 0:
+            return HttpResponse(serializers.serialize('json', run_logs))
+        else :
+            response['result'] = 'fail'
+            return HttpResponse(simplejson.dumps(response))
+    except Exception as e:
+        print ('Exception:', e)
+        response['result'] = 'fail'
+        return HttpResponse(simplejson(response))
+
+@csrf_exempt
+def audit_accept(request):
+    response = {}
+    try :
+        run_log_id = request.POST.get("run_log_id")
+        run_logs = RunLog.objects.filter(id=run_log_id, status=RunLog.PENDING)
+        if len(run_logs) > 0:
+            run_log = run_logs[0]
+            run_log.status = RunLog.ACCEPT
+            run_log.save()
+            notification = Notification(run_log = run_log)
+            notification.save()
+
+            print (notification.id)
+
+            response['result'] = 'success'
+            return HttpResponse(simplejson.dumps(response))
+        else:
+            response['result'] = 'fail'
+            return HttpResponse(simplejson.dumps(response))
+    except Exception as e:
+        print ("Exception:", e)
+        response['result'] = 'fail'
+        return HttpResponse(simplejson.dumps(response))
+
+@csrf_exempt
+def audit_reject(request):
+    response = {}
+    try :
+        run_log_id = request.POST.get("run_log_id")
+        run_logs = RunLog.objects.filter(id=run_log_id, status=RunLog.PENDING)
+        if len(run_logs) > 0:
+            run_log = run_logs[0]
+            run_log.status = RunLog.REJECT
+            run_log.save()
+            notification = Notification(run_log = run_log)
+            notification.save()
+
+            print (notification.id)
+
+            response['result'] = 'success'
+            return HttpResponse(simplejson.dumps(response))
+        else:
+            response['result'] = 'fail'
+            return HttpResponse(simplejson.dumps(response))
+    except Exception as e:
+        print ("Exception:", e)
+        response['result'] = 'fail'
+        return HttpResponse(simplejson.dumps(response))
 
 ############################################################
 ## private functions

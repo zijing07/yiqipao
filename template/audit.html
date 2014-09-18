@@ -22,35 +22,38 @@
 	    <a href="#" class="list-group-item active">
 	      等待审核的记录
 	    </a>
-	    <a onclick="click_item(0)" class="list-group-item">Dapibus ac facilisis in</a>
-	    <a onclick="click_item(1)" class="list-group-item">Morbi leo risus</a>
-	    <a onclick="click_item(2)" class="list-group-item">Porta ac consectetur ac</a>
-	    <a onclick="click_item(3)" class="list-group-item">Vestibulum at eros</a>
+
+	    {% for run_log in all_run_log %}
+	    <a id="item{{run_log.id}}" onclick="click_item({{run_log.id}})" class="list-group-item"> {{ run_log.user.name }} 于 {{ run_log.run_date |date:"Y/ m/d" }} 上传</a>
+	    {% endfor %}
 	  </div>
 	</div>
 
 	<div class="col-md-1"></div>
 	
-	<div id="pending-info" class="col-md-6 border-shape">
+	<div id="pending-info" class="col-md-6">
 	  <div>
-	    <p class="item-attr">运动<span id="sport">__</span></p>
+	    <p class="center" id="system-info"></p>
+	  </div>
+	  <div>
+	    <p class="item-attr">运动:<span id="sport" class="item-display">__</span></p>
 	  </div>
 
 	  <div>
-	    <p class="item-attr">距离（千米）<span id="distance">__</span></p>
+	    <p class="item-attr">距离（千米）:<span id="distance" class="item-display">__</span></p>
 	  </div>
 
 	  <div>
-	    <p class="item-attr">运动日期<span id="run_date">__</span></p>
+	    <p class="item-attr">运动日期:<span id="run_date" class="item-display">__</span></p>
 	  </div>
 
 	  <div>
-	    <p class="item-attr">证明人<span id="witness">__</span></p>
+	    <p class="item-attr">证明人:<span id="witness" class="item-display">__</span></p>
 	  </div>
 
 	  <div>
 	    <p class="item-attr">图片</p>
-	    <img id="picture">
+	    <img id="picture" style="max-width:100%">
 	  </div>
 
 	  <div>
@@ -60,10 +63,10 @@
 
 	  <div class="row">
 	    <div class="col-md-6">
-	      <button class="btn btn-lg btn-success" id="accept">审核通过</button>
+	      <button class="btn btn-lg btn-success" id="accept" onclick="accept()">审核通过</button>
 	    </div>
 	    <div class="col-md-6">
-	      <button class="btn btn-lg btn-danger" id="reject">不符合要求，拒绝</button>
+	      <button class="btn btn-lg btn-danger" id="reject" onclick="reject()">不符合要求，拒绝</button>
 	    </div>
 	  </div>
 	    

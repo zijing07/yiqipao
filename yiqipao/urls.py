@@ -15,7 +15,10 @@ one_mile_patterns = patterns('one_mile.views',
     url(r'^newrun', 'upload_page'),
     url(r'^upload', 'upload'),
 
-    url(r'^audit', 'audit_page'),
+    url(r'^audit$', 'audit_page'),
+    url(r'^audit/detail', 'audit_detail'),
+    url(r'^audit/accept', 'audit_accept'),
+    url(r'^audit/reject', 'audit_reject'),
 )
 
 urlpatterns = patterns('',

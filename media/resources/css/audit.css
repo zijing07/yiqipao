@@ -13,3 +13,7 @@ body {
 .item-attr {
     font-size: 25px;
 }
+
+.item-display {
+    margin-left: 20px;
+}
