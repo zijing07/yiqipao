@@ -30,6 +30,14 @@ def logout(request):
 ## index/login page
 @csrf_exempt
 def index(request):
+    if SESSION_STATUS in request.session and request.session[SESSION_STATUS] is True:
+        user_id = request.session[SESSION_USER_ID]
+        users = User.objects.filter(id=user_id)
+        user = users[0]
+        if user.is_admin is True:
+            return HttpResponseRedirect("/audit")
+        return HttpResponseRedirect("/profile")
+
     return render_to_response('index.html');
 
 @csrf_exempt
@@ -46,6 +54,10 @@ def login(request):
                 request.session[SESSION_STATUS] = True
                 request.session[SESSION_USER_ID] = user.id
                 response['result'] = 'success'
+
+                if user.is_admin is True:
+                    return HttpResponseRedirect('/audit')
+                
                 return HttpResponseRedirect('/profile')
             else :
                 response['result'] = 'wrong password'
@@ -97,7 +109,11 @@ def register(request):
 def upload_page(request):
     if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
         return render_to_response('index.html')
-    return render_to_response('upload.html')
+    user_id = request.session[SESSION_USER_ID]
+    users = User.objects.filter(id=user_id)
+    if len(users) != 1:
+        return HttpResponseRedirect('/index')
+    return render_to_response('upload.html', {'user': users[0]})
 
 class PictureForm(forms.Form):
     picture = forms.FileField()
@@ -105,12 +121,16 @@ class PictureForm(forms.Form):
 @csrf_exempt
 def upload(request):
     try :
-        if request.session[SESSION_STATUS] is not True:
-            return render_to_response('index.html')
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            return HttpResponseRedirect('/index')
         
         response = {}
-        
-        user = User.objects.all()[0]
+
+        user_id = request.session[SESSION_USER_ID]
+        users = User.objects.filter(id=user_id)
+        if len(users) != 1:
+            return HttpResponseRedirect('/index')
+        user = user[0]
         sport = request.POST.get("sport")
         distance = float(request.POST.get("distance"))
         run_d = time.strptime(request.POST.get("run_date"), "%m/%d/%Y")
@@ -147,15 +167,30 @@ def upload(request):
 ## admin view
 @csrf_exempt
 def audit_page(request):
+    if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+        return HttpResponseRedirect('/index')
+
+    user_id = request.session[SESSION_USER_ID]
+    users = User.objects.filter(id=user_id)
+    if len(users) != 1:
+        return HttpResponseRedirect('/index')
+    user = users[0]
+
+    if user.is_admin is not True:
+        return HttpResponseRedirect('/index')
+
     all_run_logs = RunLog.objects.filter(status=RunLog.PENDING)
     return render_to_response('audit.html',
-                              {'all_run_log': all_run_logs},
+                              {'all_run_log': all_run_logs, 'user': user},
                               context_instance=RequestContext(request))
 
 @csrf_exempt
 def audit_detail(request):
     response = {}
     try :
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            return HttpResponse("not authorized")
+
         run_log_id = request.POST.get("run_log_id")
         run_logs = RunLog.objects.filter(id=run_log_id)
         if len(run_logs) > 0:
@@ -172,6 +207,9 @@ def audit_detail(request):
 def audit_accept(request):
     response = {}
     try :
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            return HttpResponse("not authorized")
+
         run_log_id = request.POST.get("run_log_id")
         run_logs = RunLog.objects.filter(id=run_log_id, status=RunLog.PENDING)
         if len(run_logs) > 0:
@@ -235,7 +273,7 @@ def profile_page(request):
             return HttpResponseRedirect('/index');
 
         # get current user
-        user_id = request.session[SESSION_USER_ID];
+        user_id = request.session[SESSION_USER_ID]
         users = User.objects.filter(id=user_id)
         if len(users) != 1:
             return HttpResponseRedirect('index.html')
@@ -248,6 +286,41 @@ def profile_page(request):
     except:
         return render_to_response('index.html')
 
+ITEM_COUNT = 30
+
+@csrf_exempt
+def more_run_log(request):
+    '''
+    POST params:
+    - current_user: 0 for all, 1 for current user
+    - start_index: return 30 results from index `start_index
+    '''
+    response = {}
+    try:
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            response['result'] = "not authorized"
+            return HttpResponse(simplejson.dumps(response))
+
+        start_index = request.POST.get('start_index')
+        current_user = request.POST.get('current_user')
+
+        data = []
+        if current_user == '0':
+            data = RunLog.objects.filter(status=RunLog.ACCEPT)[start_index:start_index+ITEM_COUNT]
+            return HttpResponse(serializers.serialize('json', data))
+        else:
+            # get current user first
+            user_id = request.sesseion[SESSION_USER_ID]
+            users = User.objects.filter(id=user_id)
+            if len(users) != 1:
+                response['result'] = "please relogin"
+                return HttpResponse(simplejson.dumps(response))
+                
+            data = RunLog.objects.filter(user=users[0], status=RunLog.ACCEPT)[start_index:start_index+ITEM_COUNT]
+            return HttpResponse(serializers.serialize('json', data))
+    except Exception as e:
+        response['result'] = "please try again"
+        return HttpResponse(simplejson.dumps(response))
 
 ############################################################
 ## private functions

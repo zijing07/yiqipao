@@ -1,5 +1,6 @@
 g_run_log_range = 0;
 g_loading = false;
+g_start_index = 0;
 
 function change_run_log_range(id) {
     var button0 = "range0";
@@ -21,8 +22,9 @@ function load_run_log() {
     $.ajax({
 	url: "/profile/more_log",
 	type: "POST",
-	data: { 'current_user': 1 },
+	data: { 'current_user': g_run_log_range, 'start_index': g_start_index },
 	success: function(d, s, j) {
+	    console.log(d);
 	    g_loading = false;
 	},
 	error: function(j, s, e) {

@@ -18,6 +18,21 @@
   </head>
 
   <body>
+
+    <nav class="navbar navbar-default" role="navigation">
+
+      <!-- Title -->
+      <div class="navbar-header">
+	<a class="navbar-brand" href="/profile">一起跑</a>
+      </div>
+
+      <ul class="nav navbar-nav navbar-right" style="margin-right:30px">
+	<li><a href="#">通知<span class="badge" style="margin-left:5px">3</span></a></li>
+	<li><a href="#">{{user.name}}</a></li>
+	<li><a href="/logout">退出登录</a></li>
+      </ul>
+    </nav>
+
     <div class="container">
 	<form action="/upload" role="form" method="POST" enctype="multipart/form-data">
 	  <h2>上传运动记录</h2>
