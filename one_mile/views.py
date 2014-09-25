@@ -1,6 +1,6 @@
 from django import forms
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -14,6 +14,17 @@ import hashlib
 
 HASH_STRING = 'yiyayiqipao'
 SESSION_STATUS = 'paper_white'
+SESSION_USER_ID = 'apple_yewww'
+
+############################################################
+## logout
+@csrf_exempt
+def logout(request):
+    if SESSION_STATUS in request.session:
+        request.session[SESSION_STATUS] = False
+        del request.session[SESSION_USER_ID]
+    return HttpResponseRedirect('/index')
+        
 
 ############################################################
 ## index/login page
@@ -33,8 +44,9 @@ def login(request):
             user = users[0]
             if (user.password == __make_password(password)):
                 request.session[SESSION_STATUS] = True
+                request.session[SESSION_USER_ID] = user.id
                 response['result'] = 'success'
-                return HttpResponse(simplejson.dumps(response))
+                return HttpResponseRedirect('/profile')
             else :
                 response['result'] = 'wrong password'
                 return HttpResponse(simplejson.dumps(response))
@@ -71,8 +83,9 @@ def register(request):
         print (user.id)
 
         request.session[SESSION_STATUS] = True
+        request.session[SESSION_USER_ID] = user.id
         response['result'] = 'success'
-        return HttpResponse(simplejson.dumps(response))
+        return HttpResponseRedirect('/profile')
     except Exception as e:
         print ('Exception', e)
         response['result'] = 'internal error'
@@ -165,10 +178,18 @@ def audit_accept(request):
             run_log = run_logs[0]
             run_log.status = RunLog.ACCEPT
             run_log.save()
+
+            # update user run_length 
+            user = run_log.user
+            user.run_length += float(run_log.distance)
+            user.save()
+            print (user.name, user.run_length)
+
+            # push a notification
             notification = Notification(run_log = run_log)
             notification.save()
 
-            print (notification.id)
+            print(notification.id)
 
             response['result'] = 'success'
             return HttpResponse(simplejson.dumps(response))
@@ -204,6 +225,29 @@ def audit_reject(request):
         print ("Exception:", e)
         response['result'] = 'fail'
         return HttpResponse(simplejson.dumps(response))
+
+############################################################
+## profile view
+@csrf_exempt
+def profile_page(request):
+    try:
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            return HttpResponseRedirect('/index');
+
+        # get current user
+        user_id = request.session[SESSION_USER_ID];
+        users = User.objects.filter(id=user_id)
+        if len(users) != 1:
+            return HttpResponseRedirect('index.html')
+        user = users[0]
+
+        # get user run_length rank board
+        rank_list = User.objects.order_by('run_length')[:50]
+
+        return render_to_response('profile.html', {'user':user, 'rank_list':rank_list})
+    except:
+        return render_to_response('index.html')
+
 
 ############################################################
 ## private functions

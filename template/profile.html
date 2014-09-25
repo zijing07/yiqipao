@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <title>一起跑-{{user.name}}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/css/jquery-ui.css">
+
+    <script type="text/javascript" src="media/resources/js/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="media/resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="media/resources/js/profile.js"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-default" role="navigation">
+
+      <!-- Title -->
+      <div class="navbar-header">
+	<a class="navbar-brand" href="/profile">一起跑</a>
+      </div>
+
+      <ul class="nav navbar-nav navbar-right" style="margin-right:30px">
+	<li><a href="#">通知<span class="badge" style="margin-left:5px">3</span></a></li>
+	<li><a href="#">{{user.name}}</a></li>
+	<li><a href="/logout">退出登录</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <div class="row">
+	<div class="col-md-8">
+	  <h2>最新动态</h2>
+	  <div class="btn-toolbar" role="toolbar">
+	    <div class="btn-group">
+	      <button id="range0" type="button" class="btn btn-default active" onclick="change_run_log_range(0, 1)">所有人的跑步信息</button>
+	      <button id="range1" type="button" class="btn btn-default" onclick="change_run_log_range(1, 0)">我的跑步信息</button>
+	    </div>
+	  </div>
+
+	  <div id="run-logs">
+	    <ul class="list-group" style="margin-top: 30px">
+	      <li class="list-group-item" style="padding-left: 40px">XX 于 2009.9.9 跑步 23 km</li>
+	      <li class="list-group-item" style="padding-left: 40px">XX 于 2009.9.9 跑步 23 km</li>
+	      <li class="list-group-item" style="padding-left: 40px">XX 于 2009.9.9 跑步 23 km</li>
+	      <li class="list-group-item" style="padding-left: 40px">XX 于 2009.9.9 跑步 23 km</li>
+	      <li class="list-group-item" style="padding-left: 40px">XX 于 2009.9.9 跑步 23 km</li>
+	      <li class="list-group-item" style="padding-left: 40px">XX 于 2009.9.9 跑步 23 km</li>
+	    </ul>
+	  </div>
+
+	  <button id="load-more-button" type="button" class="btn btn-primary" style="margin-top:30px;width:100%" onlick="load_run_log()">加载更多</button>
+	</div>
+
+
+	<div class="col-md-1"></div>
+
+	<div class="col-md-3">
+	  <div class="list-group">
+	    <a href="#" class="list-group-item active">
+	      一起跑排行榜Top50
+	    </a>
+	    {% for user in rank_list %}
+	    <div class="list-group-item">
+	      <div class="row">
+		<div class="col-md-4">{{ user.name }} </div>
+		<div class="col-md-4 col-md-offset-4">{{ user.run_length }} km</div>
+	      </div>
+	    </div>
+	    {% endfor %}
+	  </div><!-- list-group -->
+	</div><!-- col-md-3 -->
+      </div><!-- row -->
+    </div><!-- container -->
+    
+  </body>
+</html>
