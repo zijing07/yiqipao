@@ -280,13 +280,13 @@ def profile_page(request):
         user = users[0]
 
         # get user run_length rank board
-        rank_list = User.objects.order_by('run_length')[:50]
+        rank_list = User.objects.order_by('-run_length')[:50]
 
         return render_to_response('profile.html', {'user':user, 'rank_list':rank_list})
     except:
         return render_to_response('index.html')
 
-ITEM_COUNT = 30
+ITEM_COUNT = 2;
 
 @csrf_exempt
 def more_run_log(request):
@@ -301,24 +301,35 @@ def more_run_log(request):
             response['result'] = "not authorized"
             return HttpResponse(simplejson.dumps(response))
 
-        start_index = request.POST.get('start_index')
+        start_index = int(request.POST.get('start_index'))
         current_user = request.POST.get('current_user')
 
+        # get data
         data = []
         if current_user == '0':
             data = RunLog.objects.filter(status=RunLog.ACCEPT)[start_index:start_index+ITEM_COUNT]
-            return HttpResponse(serializers.serialize('json', data))
         else:
             # get current user first
-            user_id = request.sesseion[SESSION_USER_ID]
+            user_id = request.session[SESSION_USER_ID]
             users = User.objects.filter(id=user_id)
             if len(users) != 1:
                 response['result'] = "please relogin"
                 return HttpResponse(simplejson.dumps(response))
                 
             data = RunLog.objects.filter(user=users[0], status=RunLog.ACCEPT)[start_index:start_index+ITEM_COUNT]
-            return HttpResponse(serializers.serialize('json', data))
+
+        # format data
+        rst = []
+        for item in data:
+            tmp = {}
+            tmp['username'] = item.user.name
+            tmp['date'] = datetime.strftime(item.run_date, '%Y/%m/%d')
+            tmp['distance'] = item.distance
+            tmp['sport'] = item.sport
+            rst.append(tmp)
+        return HttpResponse(simplejson.dumps(rst))
     except Exception as e:
+        print ('Exception:', e)
         response['result'] = "please try again"
         return HttpResponse(simplejson.dumps(response))
 
