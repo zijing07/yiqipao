@@ -24,6 +24,8 @@ one_mile_patterns = patterns('one_mile.views',
 
     url(r'^profile$', 'profile_page'),
     url(r'^profile/more_log$', 'more_run_log'),
+
+    url(r'^notification/mark_seen', 'mark_seen'),
 )
 
 urlpatterns = patterns('',

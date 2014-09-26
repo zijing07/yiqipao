@@ -1,5 +1,14 @@
 var g_current_run_log_id = "-1";
 
+function reset() {
+    $("#sport").text("");
+    $("#distance").text("");
+    $("#run_date").text("");
+    $("#witness").text("");
+    $("#picture").attr("src", "");
+    $("#comment").text("");
+}
+
 function click_item(num) {
 
     g_current_run_log_id = num
@@ -38,15 +47,17 @@ function accept() {
 	    var json = $.parseJSON(d);
 	    if (json.result == 'success') {
 		$("#item"+g_current_run_log_id).css("display", "none");
-		$("#system-info").text("ok");
+		$("#system-info").text("操作成功");
 		g_current_run_log_id = "-1";
+		reset();
 	    } else {
-		$("#system-info").text("not ok");
+		$("#system-info").text("操作失败");
 	    }
 	},
 	error: function (j, s, e) {
 	    console.log("accept error");
 	    console.log(e);
+	    $("#system-info").text("操作成功");
 	}
     });
 }
@@ -64,15 +75,17 @@ function reject() {
 	    var json = $.parseJSON(d);
 	    if (json.result == 'success') {
 		$("#item"+g_current_run_log_id).css("display", "none");
-		$("#system-info").text("ok");
+		$("#system-info").text("操作成功");
 		g_current_run_log_id = "-1";
+		reset();
 	    } else {
-		$("#system-info").text("not ok");
+		$("#system-info").text("操作失败");
 	    }
 	},
 	error: function (j, s, e) {
 	    console.log("accept error");
 	    console.log(e);
+	    $("#system-info").text("操作失败");
 	}
     });
 }

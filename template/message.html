@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>一起跑-信息栏</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="media/resources/css/jquery-ui.css">
+
+    <script type="text/javascript" src="media/resources/js/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="media/resources/js/jquery-ui.js"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-default" role="navigation">
+
+      <!-- Title -->
+      <div class="navbar-header">
+	<a class="navbar-brand" href="/profile">一起跑</a>
+      </div>
+
+      <ul class="nav navbar-nav navbar-right" style="margin-right:30px">
+	<li><a href="#">{{user.name}}</a></li>
+	<li><a href="/logout">退出登录</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <div class="jumbotron">
+	<h2>{{message}}</h2>
+	<p> 3秒后将返回</p>
+      </div>
+
+      <p stylel="display:none" id="next-url"></p>
+    </div><!-- container -->
+
+    <script>
+      setTimeout("top.location.href='{{url}}'", 3000);
+    </script>
+  </body>
+</html>

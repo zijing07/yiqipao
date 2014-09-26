@@ -37,7 +37,7 @@
 	    </a>
 
 	    {% for run_log in all_run_log %}
-	    <a id="item{{run_log.id}}" onclick="click_item({{run_log.id}})" class="list-group-item"> {{ run_log.user.name }} 于 {{ run_log.run_date |date:"Y/ m/d" }} 上传</a>
+	    <a id="item{{run_log.id}}" onclick="click_item({{run_log.id}})" class="list-group-item"> {{ run_log.user.name }} 于 {{ run_log.run_date |date:"Y/m/d" }} 上传</a>
 	    {% endfor %}
 	  </div>
 	</div>

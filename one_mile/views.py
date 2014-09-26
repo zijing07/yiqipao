@@ -130,7 +130,7 @@ def upload(request):
         users = User.objects.filter(id=user_id)
         if len(users) != 1:
             return HttpResponseRedirect('/index')
-        user = user[0]
+        user = users[0]
         sport = request.POST.get("sport")
         distance = float(request.POST.get("distance"))
         run_d = time.strptime(request.POST.get("run_date"), "%m/%d/%Y")
@@ -153,15 +153,30 @@ def upload(request):
             print (run_log.id)
         
             response['result'] = 'success'
-            return HttpResponse(simplejson.dumps(response))
+            return render_to_response("message.html",
+                                      {
+                                          'user': user,
+                                          'message': "上传成功",
+                                          'url': '/profile'
+                                      })
         else :
             response['result'] = 'form invalid'
-            return HttpResponse(simplejson.dumps(response))
+            return render_to_response("message.html",
+                                      {
+                                          'user': user,
+                                          'message': "上传失败",
+                                          'url': '/profile'
+                                      })
         
     except Exception as e:
         print ('Exception', e)
         response['result'] = 'internal error'
-        return HttpResponse(simplejson.dumps(response))
+        return render_to_response("message.html",
+                                  {
+                                      'user': user,
+                                      'message': "上传失败",
+                                      'url': '/profile'
+                                  })
 
 ############################################################
 ## admin view
@@ -282,9 +297,19 @@ def profile_page(request):
         # get user run_length rank board
         rank_list = User.objects.order_by('-run_length')[:50]
 
-        return render_to_response('profile.html', {'user':user, 'rank_list':rank_list})
-    except:
-        return render_to_response('index.html')
+        # get notification list
+        notifications = Notification.objects.filter(has_seen=False)
+        notification_list = [ i for i in notifications if i.run_log.user == user]
+
+        return render_to_response('profile.html',
+                                  {
+                                      'user':user,
+                                      'rank_list':rank_list,
+                                      'notification_list': notification_list,
+                                  })
+    except Exception as e:
+        print ('Exception:', e)
+        return HttpResponseRedirect('/index')
 
 ITEM_COUNT = 2;
 
@@ -307,7 +332,7 @@ def more_run_log(request):
         # get data
         data = []
         if current_user == '0':
-            data = RunLog.objects.filter(status=RunLog.ACCEPT)[start_index:start_index+ITEM_COUNT]
+            data = RunLog.objects.filter(status=RunLog.ACCEPT).order_by('-upload_date')[start_index:start_index+ITEM_COUNT]
         else:
             # get current user first
             user_id = request.session[SESSION_USER_ID]
@@ -316,7 +341,7 @@ def more_run_log(request):
                 response['result'] = "please relogin"
                 return HttpResponse(simplejson.dumps(response))
                 
-            data = RunLog.objects.filter(user=users[0], status=RunLog.ACCEPT)[start_index:start_index+ITEM_COUNT]
+            data = RunLog.objects.filter(user=users[0], status=RunLog.ACCEPT).order_by('-upload_date')[start_index:start_index+ITEM_COUNT]
 
         # format data
         rst = []
@@ -331,6 +356,35 @@ def more_run_log(request):
     except Exception as e:
         print ('Exception:', e)
         response['result'] = "please try again"
+        return HttpResponse(simplejson.dumps(response))
+
+
+@csrf_exempt
+def mark_seen(request):
+    response = {}
+    try:
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            response['result'] = 'not authorized'
+            return HttpResponse(simplejson.dumps(response))
+
+        # get current user and mark all the unseen notifications
+        # to seen
+        user_id = request.session[SESSION_USER_ID]
+        users = User.objects.filter(id=user_id)
+        if len(users) != 1:
+            response['result'] = 'need to relogin'
+            return HttpResponse(simplejson.dumps(response))
+        user = users[0]
+        notifications = Notification.objects.filter(has_seen=False)
+        unseens = [ i for i in notifications if i.run_log.user == user ]
+        for item in unseens:
+            item.has_seen = True
+            item.save()
+        response['result'] = 'success'
+        return HttpResponse(simplejson.dumps(response))
+    except Exception as e:
+        print ("Exception:", e)
+        response['result'] = 'fail'
         return HttpResponse(simplejson.dumps(response))
 
 ############################################################
