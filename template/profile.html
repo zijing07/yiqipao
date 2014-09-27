@@ -3,14 +3,14 @@
     <title>一起跑-{{user.name}}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="media/resources/css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/css/jquery-ui.css">
 
-    <script type="text/javascript" src="media/resources/js/jquery/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="media/resources/js/jquery-ui.js"></script>
-    <script type="text/javascript" src="media/resources/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="media/resources/js/profile.js"></script>
+    <script type="text/javascript" src="/media/resources/js/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/media/resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/media/resources/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/media/resources/js/profile.js"></script>
   </head>
 
   <body>
@@ -34,7 +34,7 @@
 	</li>
 
 
-	<li><a href="#">{{user.name}}</a></li>
+	<li><a data-toggle="modal" data-target="#user-info">{{user.name}}</a></li>
 	<li><a href="/logout">退出登录</a></li>
       </ul>
     </nav>
@@ -110,6 +110,46 @@
 	</div>
       </div>
     </div>
+
+    <div class="modal fade" id="user-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">用户详情</h4>
+	  </div>
+	  <div class="modal-body">
+
+	    <div class="page-header">
+	      <h1>{{ user.name }} <small>您总共运动了 {{user.run_length}} km</small></h1>
+	    </div>
+
+	    <div class="input-group" style="margin-bottom:10px">
+	      <span class="input-group-addon">修改用户名</span>
+	      <input id="c-username" type="text" class="form-control" placeholder="{{user.name}}">
+	    </div>
+
+	    <div class="input-group" style="margin-bottom:10px">
+	      <span class="input-group-addon">修改登录密码</span>
+	      <input id="c-new-p" type="password" class="form-control" placeholder="新密码">
+	    </div>
+
+	    <div class="input-group" style="margin-bottom:10px">
+	      <span class="input-group-addon">输入旧密码</span>
+	      <input id="c-old-p" type="password" class="form-control" placeholder="旧密码">
+	    </div>
+
+	    <div id="c-status"></div>
+
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	    <button onclick="change_password()" type="button" class="btn btn-primary">修改密码</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+
 
     <script>
       load_run_log();

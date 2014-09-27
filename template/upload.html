@@ -3,13 +3,15 @@
     <title>一起跑-上传</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="media/resources/css/upload.css">
-    <link rel="stylesheet" type="text/css" href="media/resources/bootstrap/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="media/resources/css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/css/upload.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/media/resources/css/jquery-ui.css">
 
-    <script type="text/javascript" src="media/resources/js/jquery/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="media/resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/media/resources/js/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/media/resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/media/resources/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/media/resources/js/upload.js"></script>
     <script>
       $(function() {
         $( "#datepicker" ).datepicker();
@@ -27,7 +29,7 @@
       </div>
 
       <ul class="nav navbar-nav navbar-right" style="margin-right:30px">
-	<li><a href="#">通知<span class="badge" style="margin-left:5px">3</span></a></li>
+	<li><a onclick="mark_seen()" data-toggle="modal" data-target="#notification">通知<span id="noti-count" class="badge" style="margin-left:5px">{{notification_list|length}}</span></a></li>
 	<li><a href="#">{{user.name}}</a></li>
 	<li><a href="/logout">退出登录</a></li>
       </ul>
@@ -67,5 +69,40 @@
 	</form>
 
     </div><!-- container -->
+
+    <!-- dialogs  -->
+    <div class="modal fade" id="notification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+	<div class="modal-content">
+	  <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">通知</h4>
+	  </div>
+	  <div class="modal-body">
+	    <ul class="list-group" >
+	      {% for noti in notification_list %}
+	      <li class="list-group-item">
+		{{ noti.run_log.run_date|date:"Y/m/d" }} 的运动 {{ noti.run_log.sport }} 
+		{% if noti.run_log.status == "accept" %}
+			通过了
+		{% else %}
+			未能通过
+		{% endif %}
+		审核
+		
+	      {% empty %}
+		目前没有通知。您上传的数据的审核结果将会呈现在这里。
+	      </li>
+	      {% endfor %}
+	    </ul>
+	  </div>
+	  <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+
+
   </body>
 </html>

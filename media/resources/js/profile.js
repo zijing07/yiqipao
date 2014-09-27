@@ -86,3 +86,27 @@ function mark_seen() {
 	}
     });
 }
+
+function change_password() {
+    var username = $("#c-username").val();
+    var new_password = $("#c-new-p").val();
+    var old_password = $("#c-old-p").val();
+
+    if (new_password == "") {
+	$("#c-status").text("请不要设置空密码");
+    }
+
+    $.ajax({
+	url: "/user/change_password",
+	type: "POST",
+	data: {'username': username, 'new_password': new_password, 'old_password': old_password},
+	success: function(d, s, j) {
+	    console.log(d);
+	    var json = $.parseJSON(d);
+	    $("#c-status").text(json.result);
+	},
+	error: function(j, s, e) {
+	    $("c-status").text("网络故障，请重试");
+	}
+    });
+}

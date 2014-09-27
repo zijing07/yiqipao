@@ -5,7 +5,7 @@ function reset() {
     $("#distance").text("");
     $("#run_date").text("");
     $("#witness").text("");
-    $("#picture").attr("src", "");
+    $("#picture").removeAttr("src");
     $("#comment").text("");
 }
 

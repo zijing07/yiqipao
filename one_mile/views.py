@@ -61,14 +61,26 @@ def login(request):
                 return HttpResponseRedirect('/profile')
             else :
                 response['result'] = 'wrong password'
-                return HttpResponse(simplejson.dumps(response))
+                return render_to_response('message.html',
+                                          {
+                                              'message': '密码错误',
+                                              'url': '/index'
+                                          })
 
         response['result'] = 'wrong username'
-        return HttpResponse(simplejson.dumps(response))
+        return render_to_response('message.html',
+                                  {
+                                      'message': '用户不存在',
+                                      'url': '/index'
+                                  })
 
     except Exception as e:
         response['result'] = 'internal error'
-        return HttpResponse(simplejson.dumps(response))
+        return render_to_response('message.html',
+                                  {
+                                      'message': '服务器错误，请重试',
+                                      'url': '/index'
+                                  })
 
 ############################################################
 ## register page
@@ -82,12 +94,17 @@ def register(request):
     response = {}
     try :
         username = request.POST.get("username")
-        print (username)
-        password = request.POST.get("password")
-        print (password)
-        password = __make_password(password);
 
-        print (password)
+        users = User.objects.filter(name = username)
+        if len(users) > 0:
+            return render_to_response('message.html',
+                                      {
+                                          'message': '用户名已存在',
+                                          'url': '/newuser'
+                                      })
+        
+        password = request.POST.get("password")
+        password = __make_password(password);
 
         user = User(name=username, password=password)
         user.save()
@@ -101,7 +118,11 @@ def register(request):
     except Exception as e:
         print ('Exception', e)
         response['result'] = 'internal error'
-        return HttpResponse(simplejson.dumps(response))
+        return render_to_response('message.html',
+                                  {
+                                      'message': '服务器错误，请重试',
+                                      'url': '/index'
+                                  })
 
 ############################################################
 ## upload view
@@ -113,7 +134,16 @@ def upload_page(request):
     users = User.objects.filter(id=user_id)
     if len(users) != 1:
         return HttpResponseRedirect('/index')
-    return render_to_response('upload.html', {'user': users[0]})
+
+    # get notification list
+    notifications = Notification.objects.filter(has_seen=False)
+    notification_list = [ i for i in notifications if i.run_log.user == users[0] ]
+
+    return render_to_response('upload.html',
+                              {
+                                  'user': users[0],
+                                  'notification_list': notification_list,
+                              })
 
 class PictureForm(forms.Form):
     picture = forms.FileField()
@@ -137,36 +167,31 @@ def upload(request):
         run_date = datetime.fromtimestamp(time.mktime(run_d))
         witness = request.POST.get("witness")
         comment = request.POST.get("comment")
-        
+
+        pic_file = None
         form = PictureForm(request.POST, request.FILES)
         if form.is_valid():
-            run_log = RunLog(
-                user = user,
-                sport = sport,
-                run_date = run_date,
-                distance = distance,
-                picture = request.FILES['picture'],
-                witness = witness,
-                comment = comment)
-            run_log.save()
+            pic_file = request.FILES['picture']
 
-            print (run_log.id)
+        run_log = RunLog(
+            user = user,
+            sport = sport,
+            run_date = run_date,
+            distance = distance,
+            picture = pic_file,
+            witness = witness,
+            comment = comment)
+        run_log.save()
+
+        print (run_log.id)
         
-            response['result'] = 'success'
-            return render_to_response("message.html",
-                                      {
-                                          'user': user,
-                                          'message': "上传成功",
-                                          'url': '/profile'
-                                      })
-        else :
-            response['result'] = 'form invalid'
-            return render_to_response("message.html",
-                                      {
-                                          'user': user,
-                                          'message': "上传失败",
-                                          'url': '/profile'
-                                      })
+        response['result'] = 'success'
+        return render_to_response("message.html",
+                                  {
+                                      'user': user,
+                                      'message': "上传成功",
+                                      'url': '/profile'
+                                  })
         
     except Exception as e:
         print ('Exception', e)
@@ -295,7 +320,7 @@ def profile_page(request):
         user = users[0]
 
         # get user run_length rank board
-        rank_list = User.objects.order_by('-run_length')[:50]
+        rank_list = User.objects.filter(is_admin=False).order_by('-run_length')[:50]
 
         # get notification list
         notifications = Notification.objects.filter(has_seen=False)
@@ -385,6 +410,42 @@ def mark_seen(request):
     except Exception as e:
         print ("Exception:", e)
         response['result'] = 'fail'
+        return HttpResponse(simplejson.dumps(response))
+
+############################################################
+## change password
+@csrf_exempt
+def change_password(request):
+    response = {}
+    try:
+        if SESSION_STATUS not in request.session or request.session[SESSION_STATUS] is not True:
+            response['result'] = '请重新登录'
+            return HttpResponse(simplejson.dumps(response))
+
+        username = request.POST.get("username")
+        new_password = __make_password(request.POST.get("new_password"))
+        old_password = __make_password(request.POST.get("old_password"))
+        
+        user_id = request.session[SESSION_USER_ID]
+        users = User.objects.filter(id=user_id)
+        if len(users) != 1:
+            response['result'] = '请重新登录'
+            return HttpResponse(simplejson.dumps(response))
+        user = users[0]
+
+        if old_password != user.password:
+            response['result'] = '旧密码错误'
+            return HttpResponse(simplejson.dumps(response))
+        
+        if username != "":
+            user.name = username
+        user.password = new_password
+        user.save()
+        response['result'] = '修改成功'
+        return HttpResponse(simplejson.dumps(response))
+    except Exception as e:
+        print ('Exception:', e)
+        reseponse['result'] = '服务器错误，请重试'
         return HttpResponse(simplejson.dumps(response))
 
 ############################################################
