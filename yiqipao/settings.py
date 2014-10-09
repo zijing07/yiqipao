@@ -61,8 +61,8 @@ DATABASES = {
         'NAME': 'yiqipao',
         'USER': 'yiqipao',
         'PASSWORD': 'yiqipao',
-        'HOST': '',
-        'PORT': '',
+        'HOST': '114.215.201.178',
+        'PORT': '3306',
     }
 }
 

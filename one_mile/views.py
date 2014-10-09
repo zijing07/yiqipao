@@ -15,6 +15,7 @@ import hashlib
 HASH_STRING = 'yiyayiqipao'
 SESSION_STATUS = 'paper_white'
 SESSION_USER_ID = 'apple_yewww'
+ITEM_COUNT = 30;
 
 ############################################################
 ## logout
@@ -316,7 +317,7 @@ def profile_page(request):
         user_id = request.session[SESSION_USER_ID]
         users = User.objects.filter(id=user_id)
         if len(users) != 1:
-            return HttpResponseRedirect('index.html')
+            return HttpResponseRedirect('/index')
         user = users[0]
 
         # get user run_length rank board
@@ -324,7 +325,7 @@ def profile_page(request):
 
         # get notification list
         notifications = Notification.objects.filter(has_seen=False)
-        notification_list = [ i for i in notifications if i.run_log.user == user]
+        notification_list = [ i for i in notifications if i.run_log.user.id == user.id]
 
         return render_to_response('profile.html',
                                   {
@@ -333,10 +334,9 @@ def profile_page(request):
                                       'notification_list': notification_list,
                                   })
     except Exception as e:
-        print ('Exception:', e)
+        print ('ProfilePage Exception:', e)
         return HttpResponseRedirect('/index')
 
-ITEM_COUNT = 2;
 
 @csrf_exempt
 def more_run_log(request):
@@ -357,7 +357,7 @@ def more_run_log(request):
         # get data
         data = []
         if current_user == '0':
-            data = RunLog.objects.filter(status=RunLog.ACCEPT).order_by('-upload_date')[start_index:start_index+ITEM_COUNT]
+            data = RunLog.objects.filter(status=RunLog.ACCEPT).order_by('-run_date')[start_index:start_index+ITEM_COUNT]
         else:
             # get current user first
             user_id = request.session[SESSION_USER_ID]
@@ -379,7 +379,7 @@ def more_run_log(request):
             rst.append(tmp)
         return HttpResponse(simplejson.dumps(rst))
     except Exception as e:
-        print ('Exception:', e)
+        print ('MoreRunLog Exception:', e)
         response['result'] = "please try again"
         return HttpResponse(simplejson.dumps(response))
 

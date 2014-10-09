@@ -2,7 +2,7 @@ g_run_log_range = 0;
 g_loading = false;
 g_start_index = 0;
 
-ITEM_COUNT = 2;
+ITEM_COUNT = 30;
 
 function change_run_log_range(id) {
     var button0 = "range0";
