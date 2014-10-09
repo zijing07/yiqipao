@@ -15,7 +15,7 @@ import hashlib
 HASH_STRING = 'yiyayiqipao'
 SESSION_STATUS = 'paper_white'
 SESSION_USER_ID = 'apple_yewww'
-ITEM_COUNT = 30;
+ITEM_COUNT = 30
 
 ############################################################
 ## logout
@@ -366,7 +366,7 @@ def more_run_log(request):
                 response['result'] = "please relogin"
                 return HttpResponse(simplejson.dumps(response))
                 
-            data = RunLog.objects.filter(user=users[0], status=RunLog.ACCEPT).order_by('-upload_date')[start_index:start_index+ITEM_COUNT]
+            data = RunLog.objects.filter(user=users[0], status=RunLog.ACCEPT).order_by('-run_date')[start_index:start_index+ITEM_COUNT]
 
         # format data
         rst = []
