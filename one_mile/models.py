@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib import admin
 
+import os
+import uuid
+import datetime
+
 class User(models.Model):
     name = models.CharField(max_length=200, unique=True)
     password = models.CharField(max_length=200)
@@ -11,12 +15,17 @@ class User(models.Model):
         return self.name
 
 class RunLog(models.Model):
+
+    def generate_new_filename(instance, filename):
+        f, ext = os.path.splitext(filename)
+        return os.path.join('upload_pictures', '%s%s' % (uuid.uuid4().hex, ext))
+    
     user = models.ForeignKey(User)
     sport = models.CharField(max_length=100)
     run_date = models.DateTimeField()
     upload_date = models.DateTimeField(auto_now_add=True)
     distance = models.FloatField(null=False)
-    picture = models.FileField(upload_to="upload_pictures")
+    picture = models.FileField(upload_to=generate_new_filename)
     witness = models.CharField(max_length=200)
     comment = models.CharField(max_length=1024)
 
