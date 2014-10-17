@@ -10,7 +10,7 @@
     <script type="text/javascript" src="/media/resources/js/jquery/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="/media/resources/js/jquery-ui.js"></script>
     <script type="text/javascript" src="/media/resources/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/media/resources/js/profile.js"></script>
+    <script type="text/javascript" src="/media/resources/js/profile_detail.js"></script>
   </head>
 
   <body>
@@ -43,20 +43,17 @@
       <div class="row">
 	<div class="col-md-8">
 	  <h2>最新动态</h2>
-	  <div class="btn-toolbar" role="toolbar">
-	    <div class="btn-group">
-              <button id="range0" type="button" class="btn btn-default active" onclick="change_run_log_range(0, 1)">所有人的跑步信息</button>
-              <button id="range1" type="button" class="btn btn-default" onclick="change_run_log_range(1, 0)">我的跑步信息</button>
-	    </div>
-	  </div>
 
-	  <ul class="list-group" style="margin-top: 30px;overflow:auto;" id="run-logs">
+	  <ul class="list-group" style="margin-top: 30px; max-height: 90%;" id="run-logs">
 	  </ul>
 
-	  <button id="load-more" type="button" class="btn btn-primary" style="margin-top:30px;width:100%" onclick="load_run_log()">加载更多</button>
+	  <button id="load-more" type="button" class="btn btn-primary" style="margin-top:30px;width:100%" onclick="load_run_log({{user_id}})">加载更多</button>
 	</div>
 
-	<div class="col-md-4">
+
+	<div class="col-md-1"></div>
+
+	<div class="col-md-3" style="max-height:90%">
 	  <div class="list-group">
 	    <a href="#" class="list-group-item active">
 	      一起跑排行榜
@@ -64,9 +61,8 @@
 	    {% for user in rank_list %}
 	    <div class="list-group-item">
 	      <div class="row">
-		<div class="col-md-1">{{ forloop.counter }} </div>
 		<div class="col-md-4">{{ user.name }} </div>
-		<div class="col-md-6">{{ user.run_length }} km</div>
+		<div class="col-md-6 col-md-offset-2">{{ user.run_length }} km</div>
 	      </div>
 	    </div>
 	    {% endfor %}
@@ -150,7 +146,7 @@
 
 
     <script>
-      load_run_log();
+      load_run_log({{user_id}});
     </script>
   </body>
 </html>

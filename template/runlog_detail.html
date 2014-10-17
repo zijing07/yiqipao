@@ -41,22 +41,35 @@
 
     <div class="container">
       <div class="row">
-	<div class="col-md-8">
-	  <h2>最新动态</h2>
-	  <div class="btn-toolbar" role="toolbar">
-	    <div class="btn-group">
-              <button id="range0" type="button" class="btn btn-default active" onclick="change_run_log_range(0, 1)">所有人的跑步信息</button>
-              <button id="range1" type="button" class="btn btn-default" onclick="change_run_log_range(1, 0)">我的跑步信息</button>
-	    </div>
+	<div class="col-md-8 col-md-offset-1">
+	  <div class="page-header">
+	  <h2>运动详情</h2>
+	  </div>
+	  <div class="row">
+	  <h4>用户名 <small><a href="/profile/detail?user_id={{runlog.user.id}}">{{ runlog.user.name }}</a></small></h4>
+	  </div>
+	  <div class="row">
+	  <h4>运动时间 <small>{{ runlog.run_date|date:"Y年m月d日" }}</small></h4>
+	  </div>
+	  <div class="row">
+	  <h4>运动项目 <small>{{ runlog.sport }}</small></h4>
+	  </div>
+	  <div class="row">
+	  <h4>距离 <small>{{ runlog.distance }} km</small></h4>
+	  </div>
+	  <div class="row">
+	  <h4>备注 <small>{{ runlog.comment }}</small></h4>
 	  </div>
 
-	  <ul class="list-group" style="margin-top: 30px;overflow:auto;" id="run-logs">
-	  </ul>
+	  {% if runlog.picture.name != '' %}
+	  <img src="/media/{{runlog.picture.url}}">
+	  {% endif %}
 
-	  <button id="load-more" type="button" class="btn btn-primary" style="margin-top:30px;width:100%" onclick="load_run_log()">加载更多</button>
 	</div>
 
-	<div class="col-md-4">
+	<div class="col-md-offset-1"></div>
+
+	<div class="col-md-3">
 	  <div class="list-group">
 	    <a href="#" class="list-group-item active">
 	      一起跑排行榜
@@ -64,9 +77,8 @@
 	    {% for user in rank_list %}
 	    <div class="list-group-item">
 	      <div class="row">
-		<div class="col-md-1">{{ forloop.counter }} </div>
 		<div class="col-md-4">{{ user.name }} </div>
-		<div class="col-md-6">{{ user.run_length }} km</div>
+		<div class="col-md-6 col-md-offset-2">{{ user.run_length }} km</div>
 	      </div>
 	    </div>
 	    {% endfor %}
@@ -148,9 +160,5 @@
       </div>
     </div>
 
-
-    <script>
-      load_run_log();
-    </script>
   </body>
 </html>

@@ -1,27 +1,9 @@
-g_run_log_range = 0;
 g_loading = false;
 g_start_index = 0;
 
 ITEM_COUNT = 30;
 
-function change_run_log_range(id) {
-    var button0 = "range0";
-    var button1 = "range1";
-    var button_id = "range" + id;
-    console.log(button_id);
-    g_run_log_range = id;
-    g_start_index = 0;
-
-    $("#" + button0).attr('class', 'btn btn-default');
-    $("#" + button1).attr('class', 'btn btn-default');
-    $("#" + button_id).attr('class', 'btn btn-default active');
-
-    $("#run-logs").html("");
-
-    load_run_log();
-}
-
-function load_run_log() {
+function load_run_log(id) {
     if (g_loading) {
 	alert("请等待上次加载结束。");
 	return ;
@@ -34,12 +16,14 @@ function load_run_log() {
     $.ajax({
 	url: "/profile/more_log",
 	type: "POST",
-	data: { 'current_user': g_run_log_range, 'start_index': g_start_index },
+	data: { 'current_user': 2, 'start_index': g_start_index, 'user_id': id },
 	success: function(d, s, j) {
 
 	    g_loading = false;
 	    g_start_index += ITEM_COUNT;
 	    $("#load-more").text("加载更多");
+
+	    console.log(d);
 
 	    var json = $.parseJSON(d);
 	    if (json.result != undefined) {
@@ -56,7 +40,7 @@ function load_run_log() {
 	    
 	    var html = '';
 	    for (var i=0; i<len; ++i) {
-		var tmp = '<li class="list-group-item" style="padding-left: 40px"><a href="/profile/detail?user_id='+json[i].userid+'">'+json[i].username + '</a> 于 ' + json[i].date + ' ' + json[i].sport + ' ' + json[i].distance + ' km <a href="/runlog?runlog_id='+json[i].runlog_id+'">查看详情</a></li>';
+		var tmp = '<li class="list-group-item" style="padding-left: 40px">'+json[i].username + ' 于 ' + json[i].date + ' ' + json[i].sport + ' ' + json[i].distance + ' km <a href="/runlog?runlog_id='+json[i].runlog_id+'">查看详情</a></li>';
 		html += tmp;
 	    }
 	    var h = $("#run-logs").html() + html;
