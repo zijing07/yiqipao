@@ -25,6 +25,11 @@
       <ul class="nav navbar-nav">
 	<li><a href="/newrun">上传我的跑步数据</a></li>
       </ul>
+      {% if user.is_admin %}
+      <ul class="nav navbar-nav">
+	<li><a href="/audit">数据审核</a></li>
+      </ul>
+      {% endif %}
 
       <ul class="nav navbar-nav navbar-right" style="margin-right:30px">
 	<li>

@@ -42,7 +42,7 @@
     <div class="container">
       <div class="row">
 	<div class="col-md-8">
-	  <h2>最新动态</h2>
+	  <h2>"{{ user_name }}" 的最新动态</h2>
 
 	  <ul class="list-group" style="margin-top: 30px; max-height: 90%;" id="run-logs">
 	  </ul>
@@ -51,9 +51,7 @@
 	</div>
 
 
-	<div class="col-md-1"></div>
-
-	<div class="col-md-3" style="max-height:90%">
+	<div class="col-md-4" style="max-height:90%">
 	  <div class="list-group">
 	    <a href="#" class="list-group-item active">
 	      一起跑排行榜
@@ -61,8 +59,9 @@
 	    {% for user in rank_list %}
 	    <div class="list-group-item">
 	      <div class="row">
+		<div class="col-md-1">{{ forloop.counter }} </div>
 		<div class="col-md-4">{{ user.name }} </div>
-		<div class="col-md-6 col-md-offset-2">{{ user.run_length }} km</div>
+		<div class="col-md-6">{{ user.run_length }} km</div>
 	      </div>
 	    </div>
 	    {% endfor %}

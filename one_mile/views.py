@@ -57,9 +57,6 @@ def login(request):
                 request.session[SESSION_USER_ID] = user.id
                 response['result'] = 'success'
 
-                if user.is_admin is True:
-                    return HttpResponseRedirect('/audit')
-                
                 return HttpResponseRedirect('/profile')
             else :
                 response['result'] = 'wrong password'
@@ -354,10 +351,13 @@ def profile_detail_page(request):
         notifications = Notification.objects.filter(has_seen=False)
         notification_list = [ i for i in notifications if i.run_log.user.id == user.id]
 
+        current_user = User.objects.get(id = request.GET.get('user_id'))
+
         return render_to_response('profile_detail.html',
                                   {
                                       'user':user,
                                       'user_id':request.GET.get('user_id'),
+                                      'user_name':current_user.name,
                                       'rank_list':rank_list,
                                       'notification_list': notification_list,
                                   })

@@ -67,9 +67,7 @@
 
 	</div>
 
-	<div class="col-md-offset-1"></div>
-
-	<div class="col-md-3">
+	<div class="col-md-4">
 	  <div class="list-group">
 	    <a href="#" class="list-group-item active">
 	      一起跑排行榜
@@ -77,8 +75,9 @@
 	    {% for user in rank_list %}
 	    <div class="list-group-item">
 	      <div class="row">
+		<div class="col-md-1">{{ forloop.counter }} </div>
 		<div class="col-md-4">{{ user.name }} </div>
-		<div class="col-md-6 col-md-offset-2">{{ user.run_length }} km</div>
+		<div class="col-md-6">{{ user.run_length }} km</div>
 	      </div>
 	    </div>
 	    {% endfor %}
