@@ -44,7 +44,7 @@
 	<div class="col-md-8">
 	  <h2>"{{ user_name }}" 的最新动态</h2>
 
-	  <ul class="list-group" style="margin-top: 30px; max-height: 90%;" id="run-logs">
+	  <ul class="list-group" style="margin-top: 30px; height: 550px; overflow: auto;" id="run-logs">
 	  </ul>
 
 	  <button id="load-more" type="button" class="btn btn-primary" style="margin-top:30px;width:100%" onclick="load_run_log({{user_id}})">加载更多</button>
@@ -52,7 +52,7 @@
 
 
 	<div class="col-md-4" style="max-height:90%">
-	  <div class="list-group">
+	  <div class="list-group" style="height:650px; overflow: auto">
 	    <a href="#" class="list-group-item active">
 	      一起跑排行榜
 	    </a>
@@ -60,7 +60,7 @@
 	    <div class="list-group-item">
 	      <div class="row">
 		<div class="col-md-1">{{ forloop.counter }} </div>
-		<div class="col-md-4">{{ user.name }} </div>
+		<div class="col-md-4"><a href="/profile/detail?user_id={{user.id}}">{{ user.name }}</a></div>
 		<div class="col-md-6">{{ user.run_length }} km</div>
 	      </div>
 	    </div>
